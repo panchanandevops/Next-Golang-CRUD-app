@@ -1,0 +1,7 @@
+resources:
+  - 0-pv.yaml
+  - 1-namespace.yaml
+  - 2-secret.yaml
+  - 3-pvc.yaml
+  - 4-psql.yaml
+  - 5-api-deployment.yaml

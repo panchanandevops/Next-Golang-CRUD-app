@@ -1,0 +1,18 @@
+# Base image with Go
+FROM golang:1.22.5-bullseye AS dev-base
+
+WORKDIR /app
+
+# Copy only the go.mod and go.sum files to leverage Docker cache layers
+COPY go.mod go.sum ./
+
+# Install dependencies
+RUN go mod download
+
+# Copy the rest of the application source code
+COPY . .
+
+# Expose the port the app will run on
+EXPOSE 8000
+
+CMD ["go", "run", "./main.go"]

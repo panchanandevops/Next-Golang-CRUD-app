@@ -1,0 +1,23 @@
+# Base image with Node.js
+FROM node:18-alpine AS base
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies using npm
+COPY package.json package-lock.json ./
+RUN apk add --no-cache libc6-compat && npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose the development server port
+EXPOSE 3000
+
+# Set environment variables
+ENV NODE_ENV development
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+# Start the Next.js development server with hot reload
+CMD ["npm", "run", "dev"]

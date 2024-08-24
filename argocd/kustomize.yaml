@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app-kustomize
+  namespace: argocd # Namespace for ArgoCD resources
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # Finalizer to clean up resources when deleting
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/panchanandevops/User-Management-API.git
+    targetRevision: HEAD
+    path: Deploy/kustomize/overlays/prod # Path within the Git repository containing application manifests
+  destination:
+    server: https://kubernetes.default.svc # Kubernetes cluster API server address
+  syncPolicy:
+    automated:
+      prune: true # Enable automatic pruning of resources not defined in Git
+      selfHeal: true # Enable automatic self-healing of resources
+      allowEmpty: false # Do not allow sync of empty applications
+    syncOptions:
+      - Validate=true # Validate Kubernetes manifests during sync
+      - CreateNamespace=false # Do not create namespaces during sync
+      - PrunePropagationPolicy=foreground # Prune propagation policy during sync
+      - PruneLast=true # Prune resources in the last prune round

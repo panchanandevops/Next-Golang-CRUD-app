@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace.name | default .Release.Namespace }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      {{- include "common.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-{{ .Values.deployment.container.name }}
+          image: {{ .Values.deployment.container.image }}
+          resources:
+            limits:
+              memory: {{ .Values.deployment.container.resources.limits.memory }}
+              cpu: {{ .Values.deployment.container.resources.limits.cpu }}
+            requests:
+              memory: {{ .Values.deployment.container.resources.requests.memory }}
+              cpu: {{ .Values.deployment.container.resources.requests.cpu }}
+          ports:
+            - containerPort: {{ .Values.deployment.container.port }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Values.secret.name }}
+                  key: DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.apiService.name }}
+  namespace: {{ .Values.namespace.name | default .Release.Namespace }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.apiService.type }}
+  selector:
+    {{- include "common.labels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.apiService.port }}
+      targetPort: {{ .Values.deployment.container.port }}
+      {{- if eq .Values.apiService.type "NodePort" }}
+      nodePort: {{ .Values.apiService.nodePort }}
+      {{- end }}

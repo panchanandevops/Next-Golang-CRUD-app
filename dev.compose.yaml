@@ -1,0 +1,45 @@
+services:
+  nextapp:
+    container_name: nextapp-dev
+    image: next-golang-app:v1.0.0-dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - goapp
+  goapp:
+    container_name: goapp-dev
+    image: golang-mux-app:v1.0.0-dev
+    volumes:
+      - ./backend:/app
+      - /app/go/pkg/mod
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres?sslmode=disable"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata-dev:/var/lib/postgresql/data
+
+volumes:
+  pgdata-dev: {}

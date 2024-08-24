@@ -1,0 +1,25 @@
+namespace: prod
+namePrefix: prod-
+resources:
+  - ../../base
+  - 6-ingress.yaml
+patches:
+  - target:
+      version: v1
+      kind: Secret
+      name: my-secret
+    path: patch-secret.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: go-api-deployment
+    path: patch-resources.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: go-api-deployment
+    path: patch-replicas.yaml
+commonLabels:
+  environment: prod

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.statefulset.name }}
+  namespace: {{ .Values.namespace.name | default .Release.Namespace }}
+  labels:
+    app: {{ .Values.statefulset.applabel }}
+spec:
+  serviceName: "{{ .Values.dbService.name }}"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.statefulset.applabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.statefulset.applabel }}
+    spec:
+      containers:
+        - name: {{ .Values.statefulset.container.name }}
+          image: {{ .Values.statefulset.container.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Values.secret.name }}
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Values.secret.name }}
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Values.secret.name }}
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: {{ .Values.statefulset.container.port }}
+          volumeMounts:
+            - name: {{ .Values.statefulset.volumes.name }}
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - name: {{ .Values.statefulset.volumes.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-{{ .Values.pvc.name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dbService.name }}
+  namespace: {{ .Values.namespace.name | default .Release.Namespace }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Values.statefulset.applabel }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.dbService.port }}
+      targetPort: {{ .Values.statefulset.container.port }}

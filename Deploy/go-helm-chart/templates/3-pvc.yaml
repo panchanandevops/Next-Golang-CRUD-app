@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.pvc.name }}
+  namespace: {{ .Values.namespace.name | default .Release.Namespace }}
+  labels:
+    app: {{ .Values.statefulset.applabel }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storage }}
+  storageClassName: ""

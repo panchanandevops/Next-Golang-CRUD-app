@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.pv.name }}
+spec:
+  capacity:
+    storage: {{ .Values.pv.storage }}
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: {{ .Values.pv.local.path }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - minikube

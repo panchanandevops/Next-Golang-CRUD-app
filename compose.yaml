@@ -2,9 +2,9 @@ services:
   nextapp:
     container_name: nextapp
     image: panchanandevops/next-golang-app:v1.0.0
-    # build:
-    #   context: ./frontend
-    #   dockerfile: next.dockerfile
+    build:
+      context: ./frontend
+      dockerfile: next.dockerfile
     ports:
       - '3000:3000'
     environment:
@@ -14,9 +14,9 @@ services:
   goapp:
     container_name: goapp
     image: panchanandevops/golang-mux-app:v1.0.0
-    # build:
-    #   context: ./backend
-    #   dockerfile: go.dockerfile
+    build:
+      context: ./backend
+      dockerfile: go.dockerfile
     environment:
       DATABASE_URL: 'postgresql://postgres:postgres@db:5432/postgres?sslmode=disable'
     ports:

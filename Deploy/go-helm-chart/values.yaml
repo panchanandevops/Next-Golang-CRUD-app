@@ -1,0 +1,67 @@
+commonLabel: go-api
+
+namespace:
+  name: dev
+
+extraLabels:
+  environment: dev
+  team: backend
+
+deployment:
+  name: go-api-deployment
+  replicas: 2
+  container:
+    name: golang-mux-app
+    port: 8000
+    image: panchanandevops/golang-mux-app:v1.0.0
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+
+apiService:
+  name: go-api-service
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  name: go-api-ingress
+  className: nginx
+  host: panchanandevops.com
+
+secret:
+  name: my-secret
+  stringData:
+    DATABASE_URL: postgres://postgres:postgres@postgres-statefulset-0.postgres-service.dev.svc.cluster.local:5432/postgres?sslmode=disable
+    POSTGRES_DB: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+
+statefulset:
+  name: postgres-statefulset
+  applabel: postgres
+  replicas: 1
+  container:
+    name: postgres
+    port: 5432
+    image: postgres:13
+  volumes:
+    name: postgres-storage
+
+dbService:
+  name: postgres-service
+  port: 5432
+
+pv:
+  name: psql-pv-go
+  storage: 1Gi
+  local:
+    path: /storage/db/go
+
+pvc:
+  name: psql-pvc-go
+  storage: 1Gi
