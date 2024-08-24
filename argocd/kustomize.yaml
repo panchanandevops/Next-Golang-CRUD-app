@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/panchanandevops/User-Management-API.git
+    repoURL: https://github.com/panchanandevops/Next-Golang-CRUD-app.git
     targetRevision: HEAD
     path: Deploy/kustomize/overlays/prod # Path within the Git repository containing application manifests
   destination:

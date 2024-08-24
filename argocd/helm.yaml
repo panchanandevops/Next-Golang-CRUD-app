@@ -8,11 +8,11 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/panchanandevops/User-Management-API.git
+    repoURL: https://github.com/panchanandevops/Next-Golang-CRUD-app.git
     targetRevision: main
-    path: Deploy/user-helm-chart/ # Path within the Git repository containing application manifests
+    path: Deploy/go-helm-chart/ # Path within the Git repository containing application manifests
     helm:
-      releaseName: user-api
+      releaseName: go-api
   destination:
     server: https://kubernetes.default.svc # Kubernetes cluster API server address
     namespace: dev
